@@ -49,12 +49,12 @@ todosRouter.post("/:todoId/destroy", async (request, response) => {
 todosRouter.post("/", async (request, response) => {
   const body = request.body
 
-  if (!body.content) {
+  if (!body.title) {
     return response.status(400).json({
-      error: 'content missing'
+      error: 'title missing'
     })
   }
-  let created = await response.locals.store.createTodo(todoTitle)
+  let created = await response.locals.store.createTodo(body.title)
   if (!created) {
     return response.status(400).json({
       error: 'Todo not created for some reason'

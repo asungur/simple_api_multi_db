@@ -39,7 +39,6 @@ app.get('/', async (req, res) => {
 app.use('/api/todos', todosRouter)
 app.use('/api/notes', notesRouter)
 
-app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 app.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`)

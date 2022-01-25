@@ -1,0 +1,6 @@
+POST http://localhost:3001/api/todos/
+Content-Type: application/json
+
+{
+  "title": "A todo can be created without any issues", "done": false
+}
