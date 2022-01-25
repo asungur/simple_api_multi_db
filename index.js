@@ -1,18 +1,16 @@
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
-const cors = require('cors')
-const PgPersistence = require("./lib/pg-persistence") // add this
-const res = require('express/lib/response')
+const PgPersistence = require("./lib/pg-persistence")
 
 app.use(express.json())
 app.use(morgan('tiny'))
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }))
 
 // Create a new datastore for postgres routes
 app.use((req, res, next) => {
   if (!req.path.includes('/todos')) return next()
-  res.locals.store = new PgPersistence(req.session)
+  res.locals.store = new PgPersistence('test')
   next()
 });
 
@@ -94,12 +92,12 @@ app.delete('/api/notes/:id', (request, response) => {
 
 // ROUTES USING POSTGRES
 // Return all todos
-app.get('/api/todos', (request, response) => {
+app.get('/api/todos', async (request, response) => {
   let todos = await response.locals.store.sortedTodos()
-  res.json(todos)
+  response.json(todos)
 })
 // Return a single todo
-app.get("/api/todos/:todoId", (request, response) => {
+app.get("/api/todos/:todoId", async (request, response) => {
   const todoId = request.params.todoId
   let todo = await response.locals.store.loadTodo(todoId)
   if (todo) {
@@ -109,7 +107,7 @@ app.get("/api/todos/:todoId", (request, response) => {
   }
 })
 // Toggle completion status of a todo
-app.post("/api/todos/:todoId/toggle", (request, response) => {
+app.post("/api/todos/:todoId/toggle", async (request, response) => {
   const body = request.body
   if (!body.content) {
     return response.status(400).json({
@@ -128,7 +126,7 @@ app.post("/api/todos/:todoId/toggle", (request, response) => {
   response.json(todo)
 })
 // Delete a todo
-app.post("/api/todos/:todoId/destroy",(request, response) => {
+app.post("/api/todos/:todoId/destroy", async (request, response) => {
   let todoId = request.params
   let deleted = await response.locals.store.deleteTodo(+todoId);
   if (!deleted) {
@@ -139,7 +137,7 @@ app.post("/api/todos/:todoId/destroy",(request, response) => {
   response.status(204).end()
 });
 // Create a new todo and add it to the specified list
-app.post("/api/todos", (request, response) => {
+app.post("/api/todos", async (request, response) => {
   const body = request.body
 
   if (!body.content) {
@@ -153,7 +151,7 @@ app.post("/api/todos", (request, response) => {
       error: 'Todo not created for some reason'
     })
   }
-  res.redirect('/api/todos')
+  response.redirect('/api/todos')
 })
 
 const unknownEndpoint = (request, response) => {

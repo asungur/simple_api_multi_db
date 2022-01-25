@@ -1,4 +1,3 @@
-
 INSERT INTO todos (title, done)
   VALUES ('Get coffee', TRUE),
          ('Chat with co-workers', TRUE),
